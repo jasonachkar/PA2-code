@@ -118,7 +118,7 @@ public class Client extends Thread {
             System.out.println("or could not be opened.");
             System.exit(0);
         }
-        while (inputStream.hasNextLine( ))
+        while (inputStream.hasNextLine())
         {
             try
             {   transaction[i] = new Transactions();
@@ -139,7 +139,7 @@ public class Client extends Thread {
         
         /* System.out.println("\n DEBUG : Client.readTransactions() - " + getNumberOfTransactions() + " transactions processed"); */
         
-        inputStream.close( );
+        inputStream.close();
 
      }
      
@@ -186,8 +186,8 @@ public class Client extends Thread {
         	 while (Network.getOutBufferStatus().equals("empty"))
         	 {
         		 Thread.yield(); 	/* Yield the cpu if the network output buffer is full */
-        		 
-        	 }
+
+        	}
                                                                             	
             Network.receive(transact);                               	/* Receive updated transaction from the network buffer */
             
