@@ -148,7 +148,7 @@ public class Server extends Thread {
        * Mutator method of Server class
        * 
        * @return 
-       * @param tId
+       * @param stid
        */
        public void setServerThreadId(String stid)
        { 
@@ -342,7 +342,7 @@ public class Server extends Thread {
 					} 
 
             	
-        		 while (Network.getOutBufferStatus().equals("full"))
+        		 while (Network.getOutBufferStatus().equals("full")&& !Network.getClientConnectionStatus().equals("disconnected"))
         		{
         			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
         		 }
@@ -463,9 +463,7 @@ public class Server extends Thread {
             System.out.println("\n Terminating server - " +(serverThreadId) + " Running time " + (serverEndTime - serverStartTime) + " milliseconds");
 
 
-        if(serverThreadRunningStatus1.equals("terminated") && serverThreadRunningStatus2.equals("terminated") && serverThreadRunningStatus3.equals("terminated")){
-            Network.disconnect(Network.getServerIP());
-        }
+        Network.disconnect(Network.getServerIP());
 	
     }
 }

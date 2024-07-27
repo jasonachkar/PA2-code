@@ -23,7 +23,8 @@ public class Network extends Thread {
     private static Transactions outGoingPacket[];              /* Outgoing network buffer */
     private static String inBufferStatus, outBufferStatus;     /* Current status of the network buffers - normal, full, empty */
     private static String networkStatus;                       /* Network status - active, inactive */
-    private static Semaphore s1 = new Semaphore(1);
+    private static Semaphore s1 = new Semaphore(1,true);
+    private static Semaphore s2 = new Semaphore(1,true);
     /** 
      * Constructor of the Network class
      * 
@@ -389,7 +390,7 @@ public class Network extends Thread {
          public static boolean receive(Transactions outPacket)
         {
             try {
-                s1.acquire();
+                s2.acquire();
                 outPacket.setAccountNumber(outGoingPacket[outputIndexClient].getAccountNumber());
                 outPacket.setOperationType(outGoingPacket[outputIndexClient].getOperationType());
                 outPacket.setTransactionAmount(outGoingPacket[outputIndexClient].getTransactionAmount());
@@ -412,7 +413,7 @@ public class Network extends Thread {
             }catch (InterruptedException ie){
 
             }finally {
-                s1.release();
+                s2.release();
             }
              return true;
         }   
@@ -428,7 +429,7 @@ public class Network extends Thread {
          public static boolean transferOut(Transactions outPacket)
         {
 	   	        try {
-                    s1.acquire();
+                    s2.acquire();
                     outGoingPacket[inputIndexServer].setAccountNumber(outPacket.getAccountNumber());
                     outGoingPacket[inputIndexServer].setOperationType(outPacket.getOperationType());
                     outGoingPacket[inputIndexServer].setTransactionAmount(outPacket.getTransactionAmount());
@@ -451,7 +452,7 @@ public class Network extends Thread {
                 }catch(InterruptedException ie){
 
                 }finally {
-                       s1.release();
+                       s2.release();
                 }
              return true;
         }   
@@ -564,12 +565,10 @@ public class Network extends Thread {
     public void run()
     {	
     	/* System.out.println("\n DEBUG : Network.run() - starting network thread"); */
-    	  while (!getClientConnectionStatus().equals("disconnected") && !getServerConnectionStatus().equals("disconnected")) {
+    	  while (!getClientConnectionStatus().equals("disconnected") || !getServerConnectionStatus().equals("disconnected")) {
             Thread.yield();
         }
 
-        // Once disconnected, set network status to inactive
-        setNetworkStatus("disconnected");
         System.out.println("\n Terminating Network Thread - Client disconnected Server disconnected");
     }
 }
