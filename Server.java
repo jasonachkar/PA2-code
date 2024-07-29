@@ -299,10 +299,10 @@ public class Server extends Thread {
          /* Process the accounts until the client disconnects */
          while ((!Network.getClientConnectionStatus().equals("disconnected")))
          {
-        	 while ( (Network.getInBufferStatus().equals("empty") && !Network.getClientConnectionStatus().equals("disconnected")) )
-        	 {
-        		 Thread.yield(); 	/* Yield the cpu if the network input buffer is empty */
-        	 }
+//        	 while ( (Network.getInBufferStatus().equals("empty") && !Network.getClientConnectionStatus().equals("disconnected")) )
+//        	 {
+//        		 Thread.yield(); 	/* Yield the cpu if the network input buffer is empty */
+//        	 }
         	 
         	 if (!Network.getInBufferStatus().equals("empty"))
         	 { 
@@ -342,10 +342,10 @@ public class Server extends Thread {
 					} 
 
             	
-        		 while (Network.getOutBufferStatus().equals("full")&& !Network.getClientConnectionStatus().equals("disconnected"))
-        		{
-        			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
-        		 }
+//        		 while (Network.getOutBufferStatus().equals("full")&& !Network.getClientConnectionStatus().equals("disconnected"))
+//        		{
+//        			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
+//        		 }
         		
         		 /* System.out.println("\n DEBUG : Server.processTransactions() - transferring out account " + trans.getAccountNumber()); */
         		 
@@ -366,9 +366,9 @@ public class Server extends Thread {
      * @param i, amount
      */
    
-     public double deposit(int i, double amount)
+     public synchronized double deposit(int i, double amount)
      {
-         synchronized (lock) {
+
              double curBalance;      /* Current account balance */
 
              curBalance = account[i].getBalance();          /* Get current account balance */
@@ -386,7 +386,7 @@ public class Server extends Thread {
 
              account[i].setBalance(curBalance + amount);     /* Deposit amount in the account */
              return account[i].getBalance();                /* Return updated account balance */
-         }
+
      }
          
     /**
@@ -396,9 +396,8 @@ public class Server extends Thread {
      * @param i, amount
      */
  
-     public double withdraw(int i, double amount)
+     public synchronized double withdraw(int i, double amount)
      {
-         synchronized (lock) {
              double curBalance;      /* Current account balance */
 
              curBalance = account[i].getBalance();          /* Get current account balance */
@@ -407,7 +406,7 @@ public class Server extends Thread {
 
              account[i].setBalance(curBalance - amount);     /* Withdraw amount in the account */
              return account[i].getBalance();                /* Return updated account balance */
-         }
+
      }
 
     /**
@@ -417,9 +416,9 @@ public class Server extends Thread {
      * @param i
      */
  
-     public double query(int i)
+     public synchronized double query(int i)
      {
-         synchronized (lock) {
+
              double curBalance;      /* Current account balance */
 
              curBalance = account[i].getBalance();          /* Get current account balance */
@@ -427,7 +426,6 @@ public class Server extends Thread {
              System.out.println("\n DEBUG : Server.query - " + "i " + i + " Current balance " + curBalance + " " + getServerThreadId());
 
              return curBalance;                              /* Return current account balance */
-         }
      }
          
      /**

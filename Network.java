@@ -23,8 +23,8 @@ public class Network extends Thread {
     private static Transactions outGoingPacket[];              /* Outgoing network buffer */
     private static String inBufferStatus, outBufferStatus;     /* Current status of the network buffers - normal, full, empty */
     private static String networkStatus;                       /* Network status - active, inactive */
-    private static Semaphore s1 = new Semaphore(1,true);
-    private static Semaphore s2 = new Semaphore(1,true);
+    private static Semaphore s1 = new Semaphore(1);
+    //private static Semaphore s2 = new Semaphore(1,true);
     /** 
      * Constructor of the Network class
      * 
@@ -390,7 +390,7 @@ public class Network extends Thread {
          public static boolean receive(Transactions outPacket)
         {
             try {
-                s2.acquire();
+                s1.acquire();
                 outPacket.setAccountNumber(outGoingPacket[outputIndexClient].getAccountNumber());
                 outPacket.setOperationType(outGoingPacket[outputIndexClient].getOperationType());
                 outPacket.setTransactionAmount(outGoingPacket[outputIndexClient].getTransactionAmount());
@@ -413,7 +413,7 @@ public class Network extends Thread {
             }catch (InterruptedException ie){
 
             }finally {
-                s2.release();
+                s1.release();
             }
              return true;
         }   
@@ -429,7 +429,7 @@ public class Network extends Thread {
          public static boolean transferOut(Transactions outPacket)
         {
 	   	        try {
-                    s2.acquire();
+                    s1.acquire();
                     outGoingPacket[inputIndexServer].setAccountNumber(outPacket.getAccountNumber());
                     outGoingPacket[inputIndexServer].setOperationType(outPacket.getOperationType());
                     outGoingPacket[inputIndexServer].setTransactionAmount(outPacket.getTransactionAmount());
@@ -452,7 +452,7 @@ public class Network extends Thread {
                 }catch(InterruptedException ie){
 
                 }finally {
-                       s2.release();
+                       s1.release();
                 }
              return true;
         }   
